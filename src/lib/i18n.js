@@ -21,6 +21,7 @@ export const copy = {
   en: {
     siteName: "HK National Security Law Research Portal",
     shortName: "HK NSL Portal",
+    creatorNote: "This site is created by Professor Wang Jiangyu with Codex for his teaching and research purpose only.",
     deck: "A bilingual research portal on Hong Kong's national security law framework in comparative context.",
     disclaimer: "Research resource only. Not legal advice.",
     lastVerified: "Last verified",
@@ -61,6 +62,7 @@ export const copy = {
   "zh-cn": {
     siteName: "香港国家安全法研究门户",
     shortName: "香港国安法门户",
+    creatorNote: "This site is created by Professor Wang Jiangyu with Codex for his teaching and research purpose only.",
     deck: "一个关于香港国家安全法律体系及其比较法背景的英中双语研究门户。",
     disclaimer: "仅供研究参考，不构成法律意见。",
     lastVerified: "最后核验",

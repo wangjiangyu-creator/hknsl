@@ -188,6 +188,14 @@ img {
   max-width: 760px;
 }
 
+.hero-copy .creator-note,
+.site-footer .creator-note {
+  color: var(--ink);
+  font-size: 0.96rem;
+  font-weight: 700;
+  line-height: 1.55;
+}
+
 .hero-actions {
   display: flex;
   flex-wrap: wrap;
