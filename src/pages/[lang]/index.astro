@@ -1,10 +1,7 @@
 ---
 import SiteLayout from "../../layouts/SiteLayout.astro";
-import RecordCard from "../../components/RecordCard.astro";
-import { records } from "../../data/records.js";
-import { topics } from "../../data/topics.js";
-import { locales, localized, t, withBase, withLocale } from "../../lib/i18n.js";
-import { sourceTypeCounts, sourceTypeLabels } from "../../lib/content.js";
+import HomePage from "../../components/HomePage.astro";
+import { locales, t } from "../../lib/i18n.js";
 
 export function getStaticPaths() {
   return locales.map((lang) => ({ params: { lang } }));
@@ -12,87 +9,8 @@ export function getStaticPaths() {
 
 const { lang } = Astro.params;
 const locale = lang;
-const official = records.filter((record) => ["official", "case", "policy"].includes(record.sourceType)).slice(0, 6);
-const counts = sourceTypeCounts();
-const stats = [
-  { value: records.length, label: t(locale, "allRecords") },
-  { value: records.filter((record) => record.type === "case").length, label: t(locale, "cases") },
-  { value: records.filter((record) => record.type === "legislation" || record.type === "rule").length, label: t(locale, "legislation") },
-  { value: Object.keys(counts).length, label: t(locale, "source") },
-];
 ---
 
 <SiteLayout locale={locale} current="home" title={t(locale, "siteName")} description={t(locale, "deck")}>
-  <section class="hero">
-    <div class="hero-copy">
-      <p class="eyebrow">{t(locale, "currentThrough")}</p>
-      <h1>{t(locale, "siteName")}</h1>
-      <p>{t(locale, "deck")}</p>
-      <p>{t(locale, "officialFirst")}</p>
-      <div class="hero-actions">
-        <a class="button" href={withLocale(locale, "archive")}>{t(locale, "archive")}</a>
-        <a class="button secondary" href={withLocale(locale, "comparative")}>{t(locale, "comparative")}</a>
-      </div>
-      <div class="stat-grid" aria-label="Portal statistics">
-        {stats.map((stat) => (
-          <div class="stat">
-            <strong>{stat.value}</strong>
-            <span>{stat.label}</span>
-          </div>
-        ))}
-      </div>
-    </div>
-    <figure class="hero-visual">
-      <img src={withBase("/assets/portal-banner.png")} alt="" width="1600" height="900" />
-      <figcaption>{t(locale, "disclaimer")}</figcaption>
-    </figure>
-  </section>
-
-  <section class="section">
-    <div class="section-header">
-      <div>
-        <h2>{t(locale, "featuredSources")}</h2>
-        <p>{t(locale, "officialFirst")}</p>
-      </div>
-      <a class="text-link" href={withLocale(locale, "legislation")}>{t(locale, "legislation")}</a>
-    </div>
-    <div class="record-grid">
-      {official.map((record) => <RecordCard record={record} locale={locale} compact />)}
-    </div>
-  </section>
-
-  <section class="section">
-    <div class="section-header">
-      <div>
-        <h2>{t(locale, "topics")}</h2>
-        <p>{locale === "zh-cn" ? "按研究问题组织资料，适合课程、论文、备忘录和比较法项目。" : "Research questions organize the archive for courses, papers, memos, and comparative projects."}</p>
-      </div>
-      <a class="text-link" href={withLocale(locale, "topics")}>{t(locale, "topics")}</a>
-    </div>
-    <div class="topic-grid">
-      {topics.slice(0, 6).map((topic) => (
-        <article class="topic-card">
-          <h3><a href={withLocale(locale, `topics/${topic.id}`)}>{localized(topic.title, locale)}</a></h3>
-          <p>{localized(topic.summary, locale)}</p>
-        </article>
-      ))}
-    </div>
-  </section>
-
-  <section class="section">
-    <div class="section-header">
-      <div>
-        <h2>{t(locale, "source")}</h2>
-        <p>{locale === "zh-cn" ? "资料按来源类型分组，以便区分官方法律材料、判例、学术和倡议性报告。" : "Records are grouped by source type so official law, cases, scholarship, and advocacy reports remain distinct."}</p>
-      </div>
-    </div>
-    <div class="source-grid">
-      {Object.entries(counts).map(([sourceType, count]) => (
-        <div class="source-count">
-          <strong>{count}</strong>
-          <span>{sourceTypeLabels[locale]?.[sourceType] ?? sourceType}</span>
-        </div>
-      ))}
-    </div>
-  </section>
+  <HomePage locale={locale} />
 </SiteLayout>

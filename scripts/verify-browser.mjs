@@ -62,6 +62,7 @@ try {
     { name: "mobile", viewport: { width: 390, height: 844 } },
   ];
   const paths = [
+    "/",
     "/en/",
     "/zh-cn/",
     "/en/legislation/",

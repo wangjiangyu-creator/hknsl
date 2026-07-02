@@ -1,18 +1,11 @@
 ---
-import { withLocale } from "../lib/i18n.js";
+import HomePage from "../components/HomePage.astro";
+import SiteLayout from "../layouts/SiteLayout.astro";
+import { t } from "../lib/i18n.js";
 
-const target = withLocale("en");
+const locale = "en";
 ---
 
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta http-equiv="refresh" content={`0;url=${target}`} />
-    <title>HK National Security Law Research Portal</title>
-  </head>
-  <body>
-    <p><a href={target}>Open the research portal</a></p>
-  </body>
-</html>
+<SiteLayout locale={locale} current="home" title={t(locale, "siteName")} description={t(locale, "deck")}>
+  <HomePage locale={locale} />
+</SiteLayout>
