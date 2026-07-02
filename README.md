@@ -12,7 +12,7 @@ pnpm build
 pnpm dev
 ```
 
-The site is configured for GitHub Pages project deployment at `/hknsl/`.
+The site is configured for the custom GitHub Pages domain `https://nsl.eastlaw.wang/`.
 
 ## Content Model
 

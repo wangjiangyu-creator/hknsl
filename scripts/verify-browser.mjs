@@ -13,7 +13,7 @@ try {
 }
 
 const root = resolve("dist");
-const base = "/hknsl";
+const base = "";
 const chromeCandidates = [
   "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
   "/Applications/Microsoft Edge.app/Contents/MacOS/Microsoft Edge",
@@ -37,13 +37,7 @@ function serveFile(path, res) {
 const server = createServer(async (req, res) => {
   const requestUrl = new URL(req.url || "/", "http://127.0.0.1");
   let pathname = decodeURIComponent(requestUrl.pathname);
-  if (pathname === "/") pathname = `${base}/`;
-  if (!pathname.startsWith(`${base}/`)) {
-    res.writeHead(404);
-    res.end("Not found");
-    return;
-  }
-  pathname = pathname.slice(base.length);
+  if (pathname === "/") pathname = "/";
   let filePath = join(root, pathname);
   if (pathname.endsWith("/")) filePath = join(root, pathname, "index.html");
   if (existsSync(filePath) && (await stat(filePath)).isFile()) {

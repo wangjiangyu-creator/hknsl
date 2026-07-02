@@ -2,7 +2,7 @@ import { mkdir, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
-process.env.PUBLIC_BASE_PATH ||= "/hknsl/";
+process.env.PUBLIC_BASE_PATH ||= "/";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, "..");

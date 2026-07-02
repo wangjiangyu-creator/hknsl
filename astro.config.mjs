@@ -1,9 +1,8 @@
 import { defineConfig } from "astro/config";
 import mdx from "@astrojs/mdx";
 
-const repoName = "hknsl";
-const site = process.env.PUBLIC_SITE_URL || `https://wangjiangyu-creator.github.io`;
-const base = process.env.PUBLIC_BASE_PATH || `/${repoName}`;
+const site = process.env.PUBLIC_SITE_URL || "https://nsl.eastlaw.wang";
+const base = process.env.PUBLIC_BASE_PATH || "/";
 
 export default defineConfig({
   site,
