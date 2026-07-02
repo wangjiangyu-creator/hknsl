@@ -1,0 +1,33 @@
+---
+import SiteLayout from "../../../layouts/SiteLayout.astro";
+import PageHeader from "../../../components/PageHeader.astro";
+import { topics } from "../../../data/topics.js";
+import { locales, localized, t, withLocale } from "../../../lib/i18n.js";
+import { recordsForTopic } from "../../../lib/content.js";
+
+export function getStaticPaths() {
+  return locales.map((lang) => ({ params: { lang } }));
+}
+
+const { lang } = Astro.params;
+const locale = lang;
+---
+
+<SiteLayout locale={locale} current="topics" title={t(locale, "topics")}>
+  <PageHeader
+    eyebrow="Research"
+    title={t(locale, "topics")}
+    deck={locale === "zh-cn" ? "以研究问题为中心，而不是只按文件类型浏览资料。" : "Browse by research question rather than document type alone."}
+  />
+  <section class="section">
+    <div class="topic-grid">
+      {topics.map((topic) => (
+        <article class="topic-card">
+          <h3><a href={withLocale(locale, `topics/${topic.id}`)}>{localized(topic.title, locale)}</a></h3>
+          <p>{localized(topic.summary, locale)}</p>
+          <p class="citation">{recordsForTopic(topic.id).length} {t(locale, "recordCount")}</p>
+        </article>
+      ))}
+    </div>
+  </section>
+</SiteLayout>

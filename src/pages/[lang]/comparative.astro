@@ -1,0 +1,106 @@
+---
+import SiteLayout from "../../layouts/SiteLayout.astro";
+import PageHeader from "../../components/PageHeader.astro";
+import RecordCard from "../../components/RecordCard.astro";
+import { comparativeJurisdictions, hongKongBaseline } from "../../data/comparative.js";
+import { locales, localized, t } from "../../lib/i18n.js";
+import { getRecord } from "../../lib/content.js";
+
+export function getStaticPaths() {
+  return locales.map((lang) => ({ params: { lang } }));
+}
+
+const { lang } = Astro.params;
+const locale = lang;
+const recordsForIds = (ids) => ids.map(getRecord).filter(Boolean);
+const baselineRecords = recordsForIds(hongKongBaseline.recordIds);
+const comparativeRecords = comparativeJurisdictions.flatMap((jurisdiction) => recordsForIds(jurisdiction.recordIds));
+const uniqueComparative = [...new Map(comparativeRecords.map((record) => [record.id, record])).values()];
+---
+
+<SiteLayout locale={locale} current="comparative" title={t(locale, "comparative")}>
+  <PageHeader
+    eyebrow="Comparative"
+    title={t(locale, "comparative")}
+    deck={locale === "zh-cn" ? "按法域介绍其他国家和地区的国家安全法律，并以香港法律框架作为比较基准。" : "Jurisdiction-by-jurisdiction introductions to national security law in other countries and systems, compared against Hong Kong."}
+  />
+  <section class="section">
+    <article class="comparative-baseline">
+      <div>
+        <p class="matrix-label">{locale === "zh-cn" ? "比较基准" : "Baseline for comparison"}</p>
+        <h2>{localized(hongKongBaseline.title, locale)}</h2>
+        <p>{localized(hongKongBaseline.summary, locale)}</p>
+      </div>
+      <div class="source-list-panel">
+        <p class="matrix-label">{locale === "zh-cn" ? "香港核心资料" : "Hong Kong core sources"}</p>
+        <ul class="source-list">
+          {baselineRecords.map((record) => (
+            <li>
+              <a href={record.url}>{localized(record.title, locale)}</a>
+              <span>{record.citation}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </article>
+  </section>
+  <section class="section">
+    <div class="section-header">
+      <div>
+        <h2>{locale === "zh-cn" ? "其他国家和法域" : "Other Countries and Jurisdictions"}</h2>
+        <p>
+          {locale === "zh-cn"
+            ? "每个条目先介绍该法域的国家安全法律结构，再说明其与香港国安法律框架的主要比较价值。"
+            : "Each entry introduces the national security law structure in that jurisdiction, then explains its main comparative value for Hong Kong research."}
+        </p>
+      </div>
+    </div>
+    <div class="jurisdiction-list">
+      {comparativeJurisdictions.map((jurisdiction) => {
+        const sourceRecords = recordsForIds(jurisdiction.recordIds);
+        return (
+          <article class="jurisdiction-card" id={jurisdiction.id}>
+            <div class="jurisdiction-main">
+              <div class="jurisdiction-heading">
+                <p class="matrix-label">{localized(jurisdiction.system, locale)}</p>
+                <h2>{localized(jurisdiction.name, locale)}</h2>
+              </div>
+              <div class="jurisdiction-copy">
+                <div>
+                  <h3>{locale === "zh-cn" ? "国家安全法律概况" : "National Security Law Overview"}</h3>
+                  <p>{localized(jurisdiction.introduction, locale)}</p>
+                </div>
+                <div>
+                  <h3>{locale === "zh-cn" ? "与香港的比较" : "Comparison with Hong Kong"}</h3>
+                  <p>{localized(jurisdiction.comparison, locale)}</p>
+                </div>
+              </div>
+              <ul class="contrast-list">
+                {localized(jurisdiction.contrasts, locale).map((contrast) => <li>{contrast}</li>)}
+              </ul>
+            </div>
+            <aside class="jurisdiction-sources">
+              <p class="matrix-label">{locale === "zh-cn" ? "主要资料" : "Key source records"}</p>
+              <ul class="source-list">
+                {sourceRecords.map((record) => (
+                  <li>
+                    <a href={record.url}>{localized(record.title, locale)}</a>
+                    <span>{record.citation}</span>
+                  </li>
+                ))}
+              </ul>
+            </aside>
+          </article>
+        );
+      })}
+    </div>
+  </section>
+  <section class="section">
+    <div class="section-header">
+      <h2>{locale === "zh-cn" ? "比较法资料" : "Comparative source set"}</h2>
+    </div>
+    <div class="record-grid">
+      {uniqueComparative.map((record) => <RecordCard record={record} locale={locale} compact />)}
+    </div>
+  </section>
+</SiteLayout>

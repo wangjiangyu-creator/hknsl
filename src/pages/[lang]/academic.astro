@@ -1,0 +1,28 @@
+---
+import SiteLayout from "../../layouts/SiteLayout.astro";
+import PageHeader from "../../components/PageHeader.astro";
+import RecordCard from "../../components/RecordCard.astro";
+import { locales, t } from "../../lib/i18n.js";
+import { getRecordsByType } from "../../lib/content.js";
+
+export function getStaticPaths() {
+  return locales.map((lang) => ({ params: { lang } }));
+}
+
+const { lang } = Astro.params;
+const locale = lang;
+const items = getRecordsByType("academic");
+---
+
+<SiteLayout locale={locale} current="academic" title={t(locale, "academic")}>
+  <PageHeader
+    eyebrow="Scholarship"
+    title={t(locale, "academic")}
+    deck={locale === "zh-cn" ? "围绕法律移植、普通法推理、司法角色、国际法和宪制秩序的学术文献。" : "Scholarship on legal transplant, common-law reasoning, judicial role, international law, and constitutional order."}
+  />
+  <section class="section">
+    <div class="record-grid">
+      {items.map((record) => <RecordCard record={record} locale={locale} />)}
+    </div>
+  </section>
+</SiteLayout>

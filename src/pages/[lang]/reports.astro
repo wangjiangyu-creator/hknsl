@@ -1,0 +1,28 @@
+---
+import SiteLayout from "../../layouts/SiteLayout.astro";
+import PageHeader from "../../components/PageHeader.astro";
+import RecordCard from "../../components/RecordCard.astro";
+import { locales, t } from "../../lib/i18n.js";
+import { getRecordsBySourceType } from "../../lib/content.js";
+
+export function getStaticPaths() {
+  return locales.map((lang) => ({ params: { lang } }));
+}
+
+const { lang } = Astro.params;
+const locale = lang;
+const items = getRecordsBySourceType(["ngo", "policy"]);
+---
+
+<SiteLayout locale={locale} current="reports" title={t(locale, "reports")}>
+  <PageHeader
+    eyebrow="Reports"
+    title={t(locale, "reports")}
+    deck={locale === "zh-cn" ? "非政府组织、政策机构和官方研究简报，按来源立场与资料类型分明呈现。" : "NGO, policy, and official research reports presented with source type and viewpoint clearly separated."}
+  />
+  <section class="section">
+    <div class="record-grid">
+      {items.map((record) => <RecordCard record={record} locale={locale} />)}
+    </div>
+  </section>
+</SiteLayout>

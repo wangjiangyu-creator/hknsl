@@ -1,0 +1,97 @@
+---
+import SiteLayout from "../../../layouts/SiteLayout.astro";
+import SourceBadge from "../../../components/SourceBadge.astro";
+import RecordCard from "../../../components/RecordCard.astro";
+import { records } from "../../../data/records.js";
+import { locales, localized, t, withLocale } from "../../../lib/i18n.js";
+import { getRecord, localizedRecord } from "../../../lib/content.js";
+
+export function getStaticPaths() {
+  return locales.flatMap((lang) =>
+    records
+      .filter((record) => record.type === "case")
+      .map((record) => ({ params: { lang, id: record.id } })),
+  );
+}
+
+const { lang, id } = Astro.params;
+const locale = lang;
+const record = getRecord(id);
+const item = localizedRecord(record, locale);
+const related = records
+  .filter((candidate) => candidate.id !== record.id && candidate.relatedTopics.some((topic) => record.relatedTopics.includes(topic)))
+  .slice(0, 3);
+---
+
+<SiteLayout locale={locale} current="cases" title={item.titleText} description={item.summaryText}>
+  <section class="page-header">
+    <p class="eyebrow">{t(locale, "cases")}</p>
+    <h1>{item.titleText}</h1>
+    <p class="page-deck">{item.summaryText}</p>
+  </section>
+
+  <section class="section case-grid">
+    <article class="case-detail">
+      <div class="record-meta-row">
+        <SourceBadge record={record} locale={locale} />
+        <span>{record.date}</span>
+      </div>
+      <div>
+        <h2>{t(locale, "posture")}</h2>
+        <p>{item.postureText}</p>
+      </div>
+      <div>
+        <h2>{t(locale, "issues")}</h2>
+        <ul>
+          {(item.issuesText || []).map((issue) => <li>{issue}</li>)}
+        </ul>
+      </div>
+      <div>
+        <h2>{t(locale, "outcome")}</h2>
+        <p>{item.outcomeText}</p>
+      </div>
+      <div>
+        <h2>{t(locale, "comparativeNote")}</h2>
+        <p>
+          {locale === "zh-cn"
+            ? "本案应与普通法法域关于国家安全证据、陪审团限制、行政证明和公平审讯保障的制度一起比较。"
+            : "Compare this case with common-law treatment of national security evidence, jury limits, executive certificates, and fair-trial safeguards."}
+        </p>
+      </div>
+      <a class="button" href={record.url}>{t(locale, "openSource")}</a>
+    </article>
+    <aside class="case-aside">
+      <dl class="record-facts">
+        <div>
+          <dt>{t(locale, "citation")}</dt>
+          <dd>{record.citation}</dd>
+        </div>
+        <div>
+          <dt>{t(locale, "body")}</dt>
+          <dd>{record.court}</dd>
+        </div>
+        <div>
+          <dt>{t(locale, "jurisdiction")}</dt>
+          <dd>{record.jurisdiction}</dd>
+        </div>
+        <div>
+          <dt>{t(locale, "lastVerified")}</dt>
+          <dd>{record.lastVerified}</dd>
+        </div>
+      </dl>
+      <div class="tag-row">
+        {record.tags.map((tag) => <span>{tag}</span>)}
+      </div>
+    </aside>
+  </section>
+
+  <section class="section">
+    <div class="section-header">
+      <h2>{localized({ en: "Related materials", zhCn: "相关资料" }, locale)}</h2>
+      <a class="text-link" href={withLocale(locale, "archive")}>{t(locale, "archive")}</a>
+    </div>
+    <div class="record-grid">
+      {related.map((candidate) => <RecordCard record={candidate} locale={locale} compact />)}
+    </div>
+  </section>
+</SiteLayout>

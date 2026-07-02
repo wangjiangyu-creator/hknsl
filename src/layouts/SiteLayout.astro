@@ -1,0 +1,60 @@
+---
+import LanguageSwitch from "../components/LanguageSwitch.astro";
+import { localeMeta, navItems, t, withLocale } from "../lib/i18n.js";
+import "../styles/global.css";
+
+const {
+  locale = "en",
+  title = t(locale, "siteName"),
+  description = t(locale, "deck"),
+  current = "home",
+} = Astro.props;
+
+const meta = localeMeta[locale] ?? localeMeta.en;
+const canonicalPath = Astro.url.pathname;
+const fullTitle = title === t(locale, "siteName") ? title : `${title} | ${t(locale, "shortName")}`;
+---
+
+<!doctype html>
+<html lang={meta.code} dir={meta.dir}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    <meta name="generator" content={Astro.generator} />
+    <title>{fullTitle}</title>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <header class="site-header">
+      <div class="header-inner">
+        <a class="brand" href={withLocale(locale)}>
+          <span class="brand-mark" aria-hidden="true">NSL</span>
+          <span>
+            <strong>{t(locale, "shortName")}</strong>
+            <small>{t(locale, "disclaimer")}</small>
+          </span>
+        </a>
+        <nav class="site-nav" aria-label="Primary">
+          <a class:list={{ active: current === "home" }} href={withLocale(locale)}>{t(locale, "home")}</a>
+          {navItems.map((item) => (
+            <a class:list={{ active: current === item.key }} href={withLocale(locale, item.path)}>
+              {t(locale, item.key)}
+            </a>
+          ))}
+        </nav>
+        <LanguageSwitch locale={locale} pathname={canonicalPath} />
+      </div>
+    </header>
+    <main id="main">
+      <slot />
+    </main>
+    <footer class="site-footer">
+      <div>
+        <strong>{t(locale, "siteName")}</strong>
+        <p>{t(locale, "disclaimer")} {t(locale, "currentThrough")}</p>
+      </div>
+      <a href={withLocale(locale, "archive")}>{t(locale, "archive")}</a>
+    </footer>
+  </body>
+</html>

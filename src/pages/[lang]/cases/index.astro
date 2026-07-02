@@ -1,0 +1,28 @@
+---
+import SiteLayout from "../../../layouts/SiteLayout.astro";
+import PageHeader from "../../../components/PageHeader.astro";
+import RecordCard from "../../../components/RecordCard.astro";
+import { locales, t } from "../../../lib/i18n.js";
+import { getRecordsByType } from "../../../lib/content.js";
+
+export function getStaticPaths() {
+  return locales.map((lang) => ({ params: { lang } }));
+}
+
+const { lang } = Astro.params;
+const locale = lang;
+const cases = getRecordsByType("case");
+---
+
+<SiteLayout locale={locale} current="cases" title={t(locale, "cases")}>
+  <PageHeader
+    eyebrow="Judiciary"
+    title={t(locale, "cases")}
+    deck={locale === "zh-cn" ? "围绕保释、陪审团、指定法官、搜查、海外律师、国安委决定和开放司法的主要案件。" : "Leading cases on bail, jury displacement, designated judges, search, overseas counsel, NSC decisions, and open justice."}
+  />
+  <section class="section">
+    <div class="record-grid">
+      {cases.map((record) => <RecordCard record={record} locale={locale} />)}
+    </div>
+  </section>
+</SiteLayout>

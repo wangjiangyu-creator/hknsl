@@ -1,0 +1,24 @@
+---
+import SiteLayout from "../../layouts/SiteLayout.astro";
+import PageHeader from "../../components/PageHeader.astro";
+import SearchPanel from "../../components/SearchPanel.astro";
+import { locales, t } from "../../lib/i18n.js";
+
+export function getStaticPaths() {
+  return locales.map((lang) => ({ params: { lang } }));
+}
+
+const { lang } = Astro.params;
+const locale = lang;
+---
+
+<SiteLayout locale={locale} current="archive" title={t(locale, "archive")}>
+  <PageHeader
+    eyebrow="Archive"
+    title={t(locale, "archive")}
+    deck={locale === "zh-cn" ? "搜索标题、引用、摘要、法域、来源类型和标签。资料库在构建时生成，不需要后端。" : "Search titles, citations, summaries, jurisdictions, source types, and tags. The archive is generated statically with no backend."}
+  />
+  <section class="section">
+    <SearchPanel locale={locale} />
+  </section>
+</SiteLayout>

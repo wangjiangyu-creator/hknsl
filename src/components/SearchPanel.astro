@@ -1,0 +1,128 @@
+---
+import { t } from "../lib/i18n.js";
+
+const { locale } = Astro.props;
+const filterLabels = {
+  en: {
+    all: "All source types",
+    official: "Official",
+    case: "Case law",
+    academic: "Academic",
+    ngo: "NGO",
+    policy: "Policy",
+    comparative: "Comparative",
+    international: "International",
+    records: "records",
+  },
+  "zh-cn": {
+    all: "全部来源类型",
+    official: "官方",
+    case: "判例",
+    academic: "学术",
+    ngo: "非政府组织",
+    policy: "政策",
+    comparative: "比较法",
+    international: "国际",
+    records: "条资料",
+  },
+}[locale];
+---
+
+<section class="search-panel" data-search-panel data-locale={locale}>
+  <div class="search-controls">
+    <label class="sr-only" for={`search-${locale}`}>{t(locale, "archive")}</label>
+    <input id={`search-${locale}`} data-search-input type="search" placeholder={t(locale, "searchPlaceholder")} autocomplete="off" />
+    <select data-source-filter aria-label="Source type">
+      <option value="all">{filterLabels.all}</option>
+      <option value="official">{filterLabels.official}</option>
+      <option value="case">{filterLabels.case}</option>
+      <option value="academic">{filterLabels.academic}</option>
+      <option value="ngo">{filterLabels.ngo}</option>
+      <option value="policy">{filterLabels.policy}</option>
+      <option value="comparative">{filterLabels.comparative}</option>
+      <option value="international">{filterLabels.international}</option>
+    </select>
+  </div>
+  <div class="search-count" data-search-count></div>
+  <div class="archive-list" data-search-results></div>
+</section>
+
+<template id={`record-template-${locale}`}>
+  <article class="archive-result">
+    <div class="record-meta-row">
+      <span class="source-badge"></span>
+      <span class="type-badge"></span>
+      <span data-date></span>
+    </div>
+    <h3><a data-title></a></h3>
+    <p class="citation" data-citation></p>
+    <p data-summary></p>
+    <p class="result-foot"><span data-jurisdiction></span></p>
+    <div class="tag-row" data-tags></div>
+  </article>
+</template>
+
+<script>
+  const panels = document.querySelectorAll("[data-search-panel]");
+
+  async function loadIndex() {
+    const base = `${import.meta.env.BASE_URL || "/"}`.replace(/\/?$/, "/");
+    const response = await fetch(`${base}search-index.json`);
+    return response.json();
+  }
+
+  function renderPanel(panel, index) {
+    const locale = panel.dataset.locale;
+    const input = panel.querySelector("[data-search-input]");
+    const filter = panel.querySelector("[data-source-filter]");
+    const count = panel.querySelector("[data-search-count]");
+    const results = panel.querySelector("[data-search-results]");
+    const template = document.getElementById(`record-template-${locale}`);
+    const localized = index.filter((item) => item.locale === locale);
+    const countLabel = locale === "zh-cn" ? "条资料" : "records";
+
+    function draw() {
+      const query = input.value.trim().toLowerCase();
+      const sourceType = filter.value;
+      const matches = localized.filter((item) => {
+        const queryMatch = !query || item.searchText.includes(query);
+        const sourceMatch = sourceType === "all" || item.sourceType === sourceType;
+        return queryMatch && sourceMatch;
+      });
+
+      count.textContent = `${matches.length} ${countLabel}`;
+      results.replaceChildren();
+
+      for (const item of matches) {
+        const node = template.content.cloneNode(true);
+        node.querySelector(".source-badge").textContent = item.sourceTypeLabel;
+        node.querySelector(".source-badge").classList.add(`source-${item.sourceType}`);
+        node.querySelector(".type-badge").textContent = item.type;
+        node.querySelector("[data-date]").textContent = item.date;
+        const title = node.querySelector("[data-title]");
+        title.textContent = item.title;
+        title.href = item.url;
+        node.querySelector("[data-citation]").textContent = item.citation;
+        node.querySelector("[data-summary]").textContent = item.summary;
+        node.querySelector("[data-jurisdiction]").textContent = item.jurisdiction;
+        const tags = node.querySelector("[data-tags]");
+        for (const tag of item.tags.slice(0, 8)) {
+          const span = document.createElement("span");
+          span.textContent = tag;
+          tags.append(span);
+        }
+        results.append(node);
+      }
+    }
+
+    input.addEventListener("input", draw);
+    filter.addEventListener("change", draw);
+    draw();
+  }
+
+  if (panels.length) {
+    loadIndex().then((index) => {
+      for (const panel of panels) renderPanel(panel, index);
+    });
+  }
+</script>

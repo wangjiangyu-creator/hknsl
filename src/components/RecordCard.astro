@@ -1,0 +1,37 @@
+---
+import SourceBadge from "./SourceBadge.astro";
+import { localizedRecord } from "../lib/content.js";
+import { t, withLocale } from "../lib/i18n.js";
+
+const { record, locale, compact = false } = Astro.props;
+const item = localizedRecord(record, locale);
+const detailHref = record.type === "case" ? withLocale(locale, `cases/${record.id}`) : record.url;
+const linkText = record.type === "case" ? t(locale, "readCase") : t(locale, "openSource");
+---
+
+<article class:list={["record-card", { compact }]} id={record.id}>
+  <div class="record-meta-row">
+    <SourceBadge record={record} locale={locale} />
+    <span>{record.date}</span>
+  </div>
+  <h3><a href={detailHref}>{item.titleText}</a></h3>
+  <p class="citation">{record.citation}</p>
+  {!compact && <p>{item.summaryText}</p>}
+  <dl class="record-facts">
+    <div>
+      <dt>{t(locale, "jurisdiction")}</dt>
+      <dd>{record.jurisdiction}</dd>
+    </div>
+    <div>
+      <dt>{t(locale, "body")}</dt>
+      <dd>{record.body}</dd>
+    </div>
+  </dl>
+  <div class="tag-row" aria-label={t(locale, "tags")}>
+    {record.tags.slice(0, compact ? 3 : 6).map((tag) => <span>{tag}</span>)}
+  </div>
+  <div class="record-actions">
+    <a class="text-link" href={detailHref}>{linkText}</a>
+    {record.type === "case" && <a class="text-link muted" href={record.url}>{t(locale, "source")}</a>}
+  </div>
+</article>

@@ -1,0 +1,40 @@
+---
+import SiteLayout from "../../layouts/SiteLayout.astro";
+import PageHeader from "../../components/PageHeader.astro";
+import { locales, localized, t, withLocale } from "../../lib/i18n.js";
+import { timelineWithRecords } from "../../lib/content.js";
+
+export function getStaticPaths() {
+  return locales.map((lang) => ({ params: { lang } }));
+}
+
+const { lang } = Astro.params;
+const locale = lang;
+const items = timelineWithRecords();
+---
+
+<SiteLayout locale={locale} current="timeline" title={t(locale, "timeline")}>
+  <PageHeader
+    eyebrow="Chronology"
+    title={t(locale, "timeline")}
+    deck={locale === "zh-cn" ? "从2020年香港国安法到2026年程序规例的关键节点。" : "Key points from the 2020 NSL through the 2026 procedural regulation."}
+  />
+  <section class="section">
+    <div class="timeline">
+      {items.map((item) => (
+        <article class="timeline-item">
+          <div class="timeline-date">{item.date}</div>
+          <h2>{localized(item.title, locale)}</h2>
+          <p>{localized(item.summary, locale)}</p>
+          <div class="tag-row">
+            {item.records.map((record) => (
+              <a href={record.type === "case" ? withLocale(locale, `cases/${record.id}`) : `${withLocale(locale, "archive")}#${record.id}`}>
+                {localized(record.title, locale)}
+              </a>
+            ))}
+          </div>
+        </article>
+      ))}
+    </div>
+  </section>
+</SiteLayout>

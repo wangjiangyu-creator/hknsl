@@ -1,0 +1,12 @@
+---
+import { sourceTypeLabels, typeLabels } from "../lib/content.js";
+
+const { record, locale } = Astro.props;
+const sourceLabel = sourceTypeLabels[locale]?.[record.sourceType] ?? record.sourceType;
+const typeLabel = typeLabels[locale]?.[record.type] ?? record.type;
+---
+
+<span class:list={["source-badge", `source-${record.sourceType}`]}>
+  {sourceLabel}
+</span>
+<span class="type-badge">{typeLabel}</span>

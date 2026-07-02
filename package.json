@@ -1,0 +1,24 @@
+{
+  "name": "hknsl",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "ASTRO_TELEMETRY_DISABLED=1 astro dev",
+    "build": "node scripts/create-visual-asset.mjs && node scripts/build-search-index.mjs && node scripts/validate-content.mjs && ASTRO_TELEMETRY_DISABLED=1 astro build",
+    "preview": "astro preview",
+    "validate": "node scripts/validate-content.mjs",
+    "search": "node scripts/build-search-index.mjs",
+    "asset": "node scripts/create-visual-asset.mjs",
+    "linkcheck": "node scripts/check-links.mjs",
+    "test": "node --test tests/*.test.mjs",
+    "verify:browser": "node scripts/verify-browser.mjs"
+  },
+  "dependencies": {
+    "@astrojs/mdx": "^5.0.6",
+    "astro": "^6.3.6"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.2"
+  }
+}

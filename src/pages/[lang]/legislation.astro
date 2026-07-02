@@ -1,0 +1,28 @@
+---
+import SiteLayout from "../../layouts/SiteLayout.astro";
+import PageHeader from "../../components/PageHeader.astro";
+import RecordCard from "../../components/RecordCard.astro";
+import { locales, t } from "../../lib/i18n.js";
+import { getRecordsByType } from "../../lib/content.js";
+
+export function getStaticPaths() {
+  return locales.map((lang) => ({ params: { lang } }));
+}
+
+const { lang } = Astro.params;
+const locale = lang;
+const items = getRecordsByType(["legislation", "rule"]);
+---
+
+<SiteLayout locale={locale} current="legislation" title={t(locale, "legislation")}>
+  <PageHeader
+    eyebrow={t(locale, "source")}
+    title={t(locale, "legislation")}
+    deck={locale === "zh-cn" ? "香港国安法、第四十三条实施细则、第二十三条本地立法、全国人大常委会解释和最新程序规例。" : "The NSL, Article 43 rules, local Article 23 legislation, NPCSC interpretation, and current procedural regulations."}
+  />
+  <section class="section">
+    <div class="record-grid">
+      {items.map((record) => <RecordCard record={record} locale={locale} />)}
+    </div>
+  </section>
+</SiteLayout>
